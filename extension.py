@@ -71,7 +71,7 @@ class Menu_with_buttons:
         return button_obj # Передаю сформированное меню
 
 # Класс содержащий всю информацию о фототаблице
-class Fototable():
+class Fototable:
 
     # пункты меню
     FOTOTABLE_MENU = ['1. КУСП', '2. Адрес места происшествия', '3. Должность', '4. Звание', '5. Фамилия и инициалы', '6. Фотография и подпись']
@@ -85,15 +85,27 @@ class Fototable():
     fio = 'Р.Р. Назаров'
     address = 'Московская область, Рузский городской округ,'
 
-    def json(self, patch):
-        pass
-
     def __str__(self):
         return f"id_user: {self.id_user}, kusp: {self.kusp}, current_datetime: {self.current_datetime}, images: {self.images}"
 
     def display_info(self):
         print(self.__str__())
 
+
+# Класс обрабатывающий данные Фототаблицы
+class FototableDataProcessor:
+    def __init__(self, id_user, kusp, current_datetime, images, patch):
+        self.id_user = id_user
+        self.kusp = kusp
+        self.current_datetime = current_datetime
+        self.images = images
+        self.patch = patch
+
+    def fototable_json_save(self):
+        to_json = {'id_user': self.id_user, 'kusp': self.kusp, 'current_datetime': str(self.current_datetime), 'images': self.images}
+        print(to_json)
+        with open(f"{self.patch}{self.kusp}.json", 'w') as f:
+            json.dump(to_json, f)
 
 
 

@@ -1,6 +1,6 @@
-import telebot
+import telebot, json
 from config import TOKEN, keys
-from extension import CryptoConverter, APIException, Menu_with_buttons, Fototable
+from extension import CryptoConverter, APIException, Menu_with_buttons, Fototable, FototableDataProcessor
 from pathlib import Path
 
 bot = telebot.TeleBot(TOKEN)
@@ -39,7 +39,7 @@ def convert(message: telebot.types.Message):
         bot.send_message(message.chat.id, 'Введите номер КУСП (при его отсутствии введите 0)')
     elif fototable.action_counter == 1:
         fototable.action_counter = 2 # второй этап заполнения данных фототаблицы
-        fototable.kusp = message.text
+        fototable.kusp = int(message.text)
         print(fototable.kusp)
         print(message.from_user.id)
         bot.send_message(message.chat.id, 'Выберите изображение и подпись к нему')
@@ -52,13 +52,19 @@ def convert(message: telebot.types.Message):
         src = f'files/{message.chat.id}/{fototable.kusp}/' + file_info.file_path.replace('photos/', '')
         with open(src, 'wb') as new_file:
             new_file.write(downloaded_file)
-        imag = (src, photo_description)
+        imag = {'name':src, 'photo_description':photo_description}
         fototable.images.append(imag)
         fototable.id_user = message.from_user.id
         bot.send_message(message.chat.id, 'Фотография загружена')
+# Тестирование, далее заменить "тест" на команду окончания формирования фототаблицы
     elif message.text == 'тест':
         str1 = fototable()
         print(str1)
+        # формирование json файла
+        patch = f'files/{message.chat.id}/{fototable.kusp}/'
+        print(patch)
+        json1 = FototableDataProcessor(fototable.id_user, fototable.kusp, fototable.current_datetime, fototable.images, patch)
+        json1.fototable_json_save()
         bot.send_message(message.chat.id, str1)
 
 
