@@ -67,31 +67,4 @@ def convert(message: telebot.types.Message):
         json1.fototable_json_save()
         bot.send_message(message.chat.id, str1)
 
-
-        # menu_fototable = Menu_with_buttons.building_menu(fototable.FOTOTABLE_MENU)  # Формируем меню из кнопок
-        # bot.send_message(message.chat.id,'Заполните данные', reply_markup=menu_fototable)
-    # Так как реакцией нажатия кнопки является отправка сообщения, содержащего название кнопки,
-    #pressing_button = CryptoConverter.checking_input(message.text)# проверяем соответствует ли текст названию одной из кнопок
-    # if Menu_with_buttons.pressing_button == 0: # Если количество срабатывания кнопок = 0,
-    #     if len(Menu_with_buttons.values) == 3: # и если список элементов запроса состоит из трех элементов, то
-    #         values = Menu_with_buttons.values # запрос сформирован при помощи кнопок, передаем его в обработку, а
-    #         Menu_with_buttons.values = [] # список с элементами запроса класса Меню очищаем
-    #     else: # Иначе, если кнопки не срабатывали, и список элементов запроса класса Меню не полный, то возможно
-    #         values = message.text.split(' ') # пользователь ввел запрос вручную, разбиваем его на список запроса
-    #     try:
-    #         if len(values) != 3: # если в списке запроса не достаточно элементов или их больше, то обрабатываем исключение
-    #             raise APIException(
-    #                 'Параметров должно быть три: <название валюты>, <в какую валюту перевести>, <количество переводимой валюты>')
-    #         # Достаем из списка запроса элементы <Исходная валюта>, <Результирующая валюта>, <Количество исходной валюты> и
-    #         quote, base, amount = values # присвоим их к переменным, которые далее передаем в качестве атрибутов
-    #         total_base = CryptoConverter.get_price(quote, base, amount) # получаем стоимость валюты
-    #     except APIException as e:
-    #         bot.reply_to(message, f'Ошибка пользователя. \n {e}')
-    #     except Exception as e:
-    #         bot.reply_to(message, f'Не удалось обратобать команду \n {e}')
-    #     else:
-    #         text = f'Цена {amount} {quote} в {base} - {total_base}' # Формируем ответ
-    #         bot.send_message(message.chat.id, text) # Высылаем ответ
-
-
 bot.polling(none_stop=True)
