@@ -26,15 +26,13 @@ kusp_cell.text = kusp_info # текст ячейки содержащей ном
 number_of_rows = len(images)*2 #количество строк в таблице равно количеству фотографий умноженное на 2 (строка с пояснениями)
 table1 = doc.add_table(rows=number_of_rows, cols=1) # построение объекта таблицы
 # заполнение таблицы данными
-print(number_of_rows)
 for row in range(number_of_rows):
-    print(row)
     cell = table1.cell(row, 0)
     if (row % 2) == 0:
         cell.text = images[row // 2]["name"]
-    if (row % 2) == 1:
+    else:
         cell.text = images[row // 2]["photo_description"]
 
 
-
+# сохранение файла в папке с фотографиями под именем КУСП
 doc.save('files/380009616/3124/fototable.docx')
