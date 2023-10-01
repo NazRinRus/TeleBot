@@ -1,5 +1,6 @@
 import json
 import docx
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 import requests
 from config import keys
 from telebot import types
@@ -24,14 +25,27 @@ kusp_cell.text = kusp_info # текст ячейки содержащей ном
 
 # Содержание фототаблицы
 number_of_rows = len(images)*2 #количество строк в таблице равно количеству фотографий умноженное на 2 (строка с пояснениями)
-table1 = doc.add_table(rows=number_of_rows, cols=1) # построение объекта таблицы
-# заполнение таблицы данными
+
 for row in range(number_of_rows):
-    cell = table1.cell(row, 0)
     if (row % 2) == 0:
-        cell.text = images[row // 2]["name"]
+        # Добавляем пустой абзац
+        p = doc.add_paragraph()
+        # Добавляем пустой прогон
+        run = p.add_run()
+        run.add_picture(images[row // 2]["name"], width=docx.shared.Cm(12))
+        # выравниваем картинку посередине страницы
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        # cell.add_picture('files/380009616/3124/file_12.jpg', width=docx.shared.Cm(12))
+            # images[row // 2]["name"]
     else:
-        cell.text = images[row // 2]["photo_description"]
+        # Добавляем абзац с порядковым номером фотографии
+        p = doc.add_paragraph(f'Фото №{str(row // 2 + 1)}. ')
+        # Добавляем прогон с коментарием к фотографии
+        run = p.add_run(images[row // 2]["photo_description"])
+        # выравниваем коментарий по ширине страницы
+        p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        # Добавляем пустой абзац для визуального разделения
+        doc.add_paragraph()
 
 
 # сохранение файла в папке с фотографиями под именем КУСП
