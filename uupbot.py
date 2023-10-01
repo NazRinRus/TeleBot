@@ -1,7 +1,8 @@
 import telebot, json
 from config import TOKEN, keys
-from extension import CryptoConverter, APIException, Menu_with_buttons, Fototable, FototableDataProcessor
+from extension import APIException, Menu_with_buttons, Fototable, FototableDataProcessor
 from pathlib import Path
+from fototable_lib import FototableDocx
 
 bot = telebot.TeleBot(TOKEN)
 
@@ -65,6 +66,8 @@ def convert(message: telebot.types.Message):
         print(patch)
         json1 = FototableDataProcessor(fototable.id_user, fototable.kusp, fototable.current_datetime, fototable.images, patch)
         json1.fototable_json_save()
+        docx1 = FototableDocx(fototable.id_user, fototable.kusp)
+        docx1.fototable_docx_save()
         bot.send_message(message.chat.id, str1)
 
 bot.polling(none_stop=True)
