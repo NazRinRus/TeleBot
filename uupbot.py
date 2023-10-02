@@ -9,12 +9,11 @@ bot = telebot.TeleBot(TOKEN)
 # Обрабатываются команды 'start', 'help'
 @bot.message_handler(commands=['start', 'help'])
 def help(message: telebot.types.Message):
-    text = 'Чтобы начать работу, введите команду боту в следующем формате: \n <название валюты> \
-    <в какую валюту перевести> \
-    <количество переводимой валюты> \n \
-    напирмер: биткоин доллар 3 \n \
-    или воспользуйтесь меню, введя команду /menu \n \
-    Чтобы увидеть список доступных валют, введите команду /values'
+    text = ('Выберите пункт меню.'
+            '1.Фототаблица - введите номер КУСП, при его отсутствии введите 0, '
+            'далее последовательно выберите фотографию и подпись к ней '
+            'количество фотографий неограничено. Фотографии должны быть горизонтальные!'
+            'После загрузки фотографий введите Финиш')
     bot.reply_to(message, text)
 
 # Обрабатывается команда 'menu', если пользователь предпочел сформировать запрос кнопками, а не ручным вводом
@@ -35,6 +34,7 @@ def values(message: telebot.types.Message):
 @bot.message_handler(content_types=['text', 'photo'])
 def convert(message: telebot.types.Message):
     fototable = Fototable
+# блок формирования фототаблицы
     if message.text == '1. Фототаблица':
         fototable.action_counter = 1 # первый этап заполнения данных фототаблицы
         bot.send_message(message.chat.id, 'Введите номер КУСП (при его отсутствии введите 0)')
@@ -57,8 +57,8 @@ def convert(message: telebot.types.Message):
         fototable.images.append(imag)
         fototable.id_user = message.from_user.id
         bot.send_message(message.chat.id, 'Фотография загружена')
-# Тестирование, далее заменить "тест" на команду окончания формирования фототаблицы
-    elif message.text == 'тест':
+# Окончание формирования фототаблицы, вывод результатов
+    elif message.text == 'Финиш':
         str1 = fototable()
         print(str1)
         # формирование json файла
@@ -68,6 +68,12 @@ def convert(message: telebot.types.Message):
         json1.fototable_json_save()
         docx1 = FototableDocx(fototable.id_user, fototable.kusp)
         docx1.fototable_docx_save()
+        fototable.action_counter = 0  # обнуляю этап заполнения
         bot.send_message(message.chat.id, str1)
+
+# блок заполнения данных пользователя
+    if message.text == '4. Данные пользователя':
+        fototable.action_counter = 1 # первый этап заполнения данных фототаблицы
+        bot.send_message(message.chat.id, 'Введите номер КУСП (при его отсутствии введите 0)')
 
 bot.polling(none_stop=True)
