@@ -72,8 +72,8 @@ def convert(message: telebot.types.Message):
         bot.send_message(message.chat.id, str1)
 
 # блок заполнения данных пользователя
+    user = User
     if message.text == '4. Данные пользователя':
-        user = User
         user.id_user = message.chat.id
         user.action_counter = 1 # первый этап заполнения данных пользователя
         bot.send_message(message.chat.id, 'Введите должность (например УУП, Ст. УУП)')
