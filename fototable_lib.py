@@ -12,9 +12,16 @@ class FototableDocx:
         self.id_user = id_user
         self.kusp = kusp
 
-    # извлечение данных с файла json
+    # извлечение данных фототаблицы с файла json
     def fototable_json_open(self):
         with open(f'files/{self.id_user}/{self.kusp}/{self.kusp}.json') as f:
+            file_content = f.read()
+            templates = json.loads(file_content)
+        return templates
+
+    # извлечение данных пользователя с файла json
+    def user_json_open(self):
+        with open('users.json') as f:
             file_content = f.read()
             templates = json.loads(file_content)
         return templates
@@ -27,9 +34,11 @@ class FototableDocx:
         date_kusp = templates['current_datetime']
         kusp_info = f'{kusp} от {date_kusp}'
         images = templates['images']
+        user = self.user_json_open() # это список пользователей, не конкретный пользователь
 
         doc = docx.Document('files/fototable_sample.docx')  # создаю экземпляр шаблона фототаблицы
 
+        # верхний колонтитул
         header = doc.sections[0].header # получаю объект верхнего колонтитула
         title = header.tables[0]  # таблица с информацией о КУСП (номер КУСП и дата)
         kusp_cell = title.cell(0, 1)  # ячейка содержащая информацию о КУСП
@@ -57,6 +66,17 @@ class FototableDocx:
                 p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
                 # Добавляем пустой абзац для визуального разделения
                 doc.add_paragraph()
+
+        # нижний колонтитул
+        footer = doc.sections[0].footer  # получаю объект нижнего колонтитула
+        title_footer = footer.tables[0]  # таблица с информацией о должностном лице
+        job_title_cell = title_footer.cell(1, 1)  # ячейка содержащая информацию о должности
+        job_title_cell.text = user[str(id_user)]['job_title']  # текст ячейки содержащей должность
+        rank_cell = title_footer.cell(3, 0)  # ячейка содержащая информацию о звании
+        rank_cell.text = user[str(id_user)]['rank']  # текст ячейки содержащей звание
+        fio_cell = title_footer.cell(3, 2)  # ячейка содержащая фамилию и инициалы
+        fio_cell.text = user[str(id_user)]['fio']  # текст ячейки содержащей фамилию и инициалы
+        fio_cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.RIGHT
 
         # сохранение файла в папке с фотографиями под именем КУСП
         doc.save(f'files/{id_user}/{kusp}/{kusp}.docx')
