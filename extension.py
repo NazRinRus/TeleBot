@@ -23,20 +23,29 @@ class Menu_with_buttons:
 
 # Класс содержащий всю информацию о фототаблице
 class Fototable:
-    # пункты меню
-    FOTOTABLE_MENU = ['1. КУСП', '2. Адрес места происшествия', '3. Должность', '4. Звание', '5. Фамилия и инициалы', '6. Фотография и подпись']
     action_counter = 0  # Счетчик действий по заполнению данных фототаблицы
     kusp = 0 # Номер зарегистрированного события КУСП
     images = [] # Список значения которого пары - изображение, описание
     current_datetime = datetime.now().date().strftime("%d.%m.%Y") # Текущая дата
     id_user = 0
-    job_title = 'УУП'
-    rank = 'лейтенант'
-    fio = 'Р.Р. Назаров'
-    address = 'Московская область, Рузский городской округ,'
+    address = ''
 
     def __str__(self):
         return f"id_user: {self.id_user}, kusp: {self.kusp}, current_datetime: {self.current_datetime}, images: {self.images}"
+
+    def display_info(self):
+        print(self.__str__())
+
+# Класс содержащий всю информацию о пользователе
+class User:
+    action_counter = 0  # Счетчик действий по заполнению данных пользователя
+    id_user = 0
+    job_title = 'УУП' # Должность
+    rank = 'лейтенант' # Звание
+    fio = 'Р.Р. Назаров' # Инициалы и фамилия
+
+    def __str__(self):
+        return f"id_user: {self.id_user}, job_title: {self.job_title}, rank: {self.rank}, fio: {self.fio}"
 
     def display_info(self):
         print(self.__str__())
@@ -57,5 +66,28 @@ class FototableDataProcessor:
         with open(f"{self.patch}{self.kusp}.json", 'w') as f:
             json.dump(to_json, f)
 
+# Класс обрабатывающий данные пользователя
+class UserDataProcessor:
+    def __init__(self, id_user, job_title, rank, fio):
+        self.id_user = id_user
+        self.job_title = job_title
+        self.rank = rank
+        self.fio = fio
 
+    def user_json_save(self):
+        # считываю содержимое файла user.json в templates
+        with open('users.json') as f:
+            file_content = f.read()
+            templates = json.loads(file_content)
+            print('templates: ', templates)
+        to_json = {self.id_user: {'job_title': self.job_title, 'rank': self.rank, 'fio': self.fio}}
+        print('to_json: ', to_json)
+        templates[self.id_user] = {'job_title': self.job_title, 'rank': self.rank, 'fio': self.fio}
+        print('templates.append: ', templates)
+        with open("users.json", 'w') as f:
+            json.dump(templates, f)
 
+if __name__ == '__main__':
+
+    user = UserDataProcessor(380009616, 'УУП', 'лейтенант', 'Р.Р. Назаров')
+    user.user_json_save()
