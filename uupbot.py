@@ -1,6 +1,6 @@
 import telebot, json
 from config import TOKEN, keys
-from extension import APIException, Menu_with_buttons, Fototable, FototableDataProcessor
+from extension import APIException, Menu_with_buttons, Fototable, FototableDataProcessor, User, UserDataProcessor
 from pathlib import Path
 from fototable_lib import FototableDocx
 
@@ -73,7 +73,29 @@ def convert(message: telebot.types.Message):
 
 # блок заполнения данных пользователя
     if message.text == '4. Данные пользователя':
-        fototable.action_counter = 1 # первый этап заполнения данных фототаблицы
-        bot.send_message(message.chat.id, 'Введите номер КУСП (при его отсутствии введите 0)')
+        user = User
+        user.id_user = message.chat.id
+        user.action_counter = 1 # первый этап заполнения данных пользователя
+        bot.send_message(message.chat.id, 'Введите должность (например УУП, Ст. УУП)')
+    elif user.action_counter == 1:
+        user.action_counter = 2 # второй этап заполнения данных пользователя
+        user.job_title = message.text
+        bot.send_message(message.chat.id, 'Введите звание (например лейтенант полиции)')
+    elif user.action_counter == 2:
+        user.action_counter = 3  # третий этап заполнения данных пользователя
+        user.rank = message.text
+        bot.send_message(message.chat.id, 'Введите Фамилию и инициалы')
+    elif user.action_counter == 3:
+        user.action_counter = 0  # последний этап заполнения данных пользователя
+        user.fio = message.text
+        bot.send_message(message.chat.id, 'Ввод закончен. Введите Сохранить')
+        # Окончание формирования фототаблицы, вывод результатов
+    elif message.text == 'Сохранить':
+        str1 = user()
+        print(str1)
+        json1 = UserDataProcessor(user.id_user, user.job_title, user.rank, user.fio)
+        json1.user_json_save()
+        user.action_counter = 0  # обнуляю этап заполнения
+        bot.send_message(message.chat.id, str1)
 
 bot.polling(none_stop=True)
